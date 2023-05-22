@@ -1,0 +1,127 @@
+% !TeX spellcheck = ru_RU
+% !TEX root = vkr.tex
+
+\section{Детали реализации}
+В данном разделе предлагается рассмотреть основные детали реализации типов \texttt{SparseMatrix}, \texttt{SparseVector} и \texttt{Graph} для представления графов, а также реализацию векторно-матричных операций над этими типами и алгоритма \texttt{Breadth-first search} на основе этих операций. Разработка осуществлена на языке \fsharp. Полный код реализации доступен в публичном репозитории\footnote{\url{https://github.com/LeonidLodygin/SPBU.2022.FunctionalProgramming.Homeworks} (дата доступа:   \DTMdate{2023-05-21}).}.
+
+\subsection{SparseMatrix и SparseVector}
+Тип \texttt{SparseVector} (листинг~\ref{sparsevector}) представляет из себя структуру данных, с которой возможны операции как с обычным массивом, например, обращение к элементу, но в то же время хранящуюся в памяти как тип \texttt{BinaryTree} (бинарное дерево, листинг~\ref{binarytree}). Такая реализация обусловлена оптимизацией выделения памяти под хранение экземпляров данного типа. Элементы вектора, обёрнутые в тип \textbf{Option} из библиотеки \textbf{Microsoft.FSharp.Core}, хранятся в листьях дерева. В том случае, если оба листа одного родителя пусты и обозначены как \texttt{None}, то листья \enquote{отрезаются} и родитель заменятся на \texttt{None}. Таким образом, векторы малой плотности будут занимать меньше памяти для хранения, чем такие же векторы, представленные в памяти в виде обычного массива, но в то же время будут сохранять все свойства векторов.
+
+\lstdefinestyle{codelistingstyle}{
+    backgroundcolor=\color{white},   
+    commentstyle=\color{green},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{purple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                                     
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\begin{lstlisting}[style=codelistingstyle, caption={Тип SparseVector},label={sparsevector}, frame=single]
+type SparseVector<'Value when 'Value: equality> =
+    val Memory: BinaryTree<'Value>
+    val Length: uint
+\end{lstlisting}
+
+\begin{lstlisting}[style=codelistingstyle, caption={Тип BinaryTree},label={binarytree}, frame=single]
+type BinaryTree<'Value> =
+    | Node of BinaryTree<'Value> * BinaryTree<'Value>
+    | Leaf of 'Value
+    | None
+\end{lstlisting}
+
+Для сложения экземпляров типа \texttt{SparseVector} реализована функция \texttt{ParallelFAddVector}, принимающая два вектора одинакового размера и возвращающая результирующий вектор, в ячейках которого лежат результаты поэлементной операции, переданной в качестве вспомогательной функции. \texttt{ParallelFAddVector} с помощью рекурсивной функции \texttt{helper} обходит оба дерева и, доходя до листьев, применяет необходимую операцию к значениям в листьях. Пример вспомогательной функции для математического сложения векторов в листинге~\ref{helpfunc} 
+
+\begin{lstlisting}[style=codelistingstyle, caption={Пример вспомогательной поэлементной функции},label={helpfunc}, frame=single]
+let fAdd a b =
+    match a, b with
+    | Some x, Some y ->
+        if x + y <> 0 then
+            Some(x + y)
+        else
+            Option.None
+    | Option.None, Some x -> Some x
+    | Some x, Option.None -> Some x
+    | Option.None, Option.None -> Option.None
+\end{lstlisting}
+
+Представление в виде двоичных деревьев сохраняет возможность использования многопоточности при реализации такой функции. При обходе деревьев, если оба дерева имеют не \texttt{None} потомков, происходят два рекурсивных вызова функции \texttt{helper} от потомков, следовательно, в данном месте имеется возможность для использования параллельных вычислений (листинг~\ref{addparallel}). Для контроля количества потоков в функцию \texttt{ParallelFAddVector} передается параметр типа \texttt{int}, определяющий количество потоков в степени двойки, которое мы хотим выделить для работы функции.
+
+\begin{lstlisting}[style=codelistingstyle, caption={Разделение задачи сложения двух деревьев на две подзадачи и использование потоков для получения результата},label={addparallel}, frame=single]
+| Node (left, right), Node (left2, right2) ->
+    if level = 0 then
+        Node(helper left left2 level, helper right right2 level)
+        |> NoneDestroyer
+    else
+        let tasks =
+            [| async { return helper left left2 (level - 1) }
+               async { return helper right right2 (level - 1) } |]
+
+        let results = tasks |> Async.Parallel |> Async.RunSynchronously
+        Node(results[0], results[1]) |> NoneDestroyer
+\end{lstlisting}
+
+Объекты типа \texttt{SparseMatrix} аналагично объектам типа \texttt{SparseVector} хранятся в памяти в виде дерева квадрантов. Абстракция позволяет взаимодействовать с такими объектами как с двумерными массивами и, соответственно, применять к ним векторно-матричные операции. Для умножения вектора типа \texttt{SparseVector} на матрицу типа \texttt{SparseMatrix} была реализована функция \texttt{ParallelMultiplyVecMat}, принимающая вектор, матрицу и возращающая результирующий вектор. Аналогично функции сложения, данная функция легко поддается разделению на подзадачи, каждая из которых выполняется на своем потоке. Количество потоков определяется входным параметром \texttt{parallelLevel}.
+
+\subsection{Breadth-first search}
+Функция \texttt{Bfs} принимает на вход объект типа \texttt{Graph} (листинг~\ref{graph}), хранящийся в памяти как \texttt{SparseMatrix}, список стартовых вершин и два числовых параметра, отвечающих за многопоточность (листинг~\ref{bfs}).
+
+\begin{lstlisting}[style=codelistingstyle, caption={Тип Graph},label={graph}, frame=single]
+type Graph<'Value when 'Value: equality> =
+    val Memory: SparseMatrix<'Value>
+    val Vertices: uint
+    val Edges: uint
+\end{lstlisting}
+
+\begin{lstlisting}[style=codelistingstyle, caption={Алгоритм Bfs с использованием векторно-матричных операций},label={bfs}, frame=single]
+let Bfs (graph: Graph<'Value>) (apexes: List<uint>) fAddLevel multLevel =
+    let apexes = List.map (fun x -> (x, ())) apexes
+    let front = SparseVector(apexes, graph.Vertices)
+
+    let visited =
+        ParallelFAddVector(SuperSum 0u) front (SparseVector(BinaryTree.None, graph.Vertices)) fAddLevel
+
+    let rec helper (front: SparseVector<'A>) visited iter =
+        if front.IsEmpty then
+            visited
+        else
+            let newFront =
+                ParallelFAddVector
+                    Mask
+                    (ParallelMultiplyVecMat front graph.Memory FrontAdd FrontMult multLevel)
+                    visited
+                    fAddLevel
+
+            let visited = ParallelFAddVector(SuperSum iter) newFront visited fAddLevel
+            helper newFront visited (iter + 1u)
+
+    helper front visited 1u
+\end{lstlisting}
+
+По данном списку создается вектор \texttt{front}, который на каждом шаге алгоритма будет содержать актуальные вершины, в которых мы находимся. Далее, создается вектор посещенных уже ранее вершин с помощью функции сложения векторов и вспомогательной поэлементной функции \texttt{SuperSum} (листинг~\ref{supersum}). 
+
+\begin{lstlisting}[style=codelistingstyle, caption={Вспомогательная поэлементная функция для определения посещенных вершин},label={supersum}, frame=single]
+let SuperSum iter value1 value2 =
+    match value1, value2 with
+    | Option.None, Option.None -> Option.None
+    | Option.None, value2 -> value2
+    | Some _, Option.None -> Some iter
+\end{lstlisting}
+
+Далее, запускается вспомогательная рекурсивная функция, которая будет умножать \texttt{front} на матрицу, убирать из него уже посещенные ранее вершины с помощью поэлементной функции \texttt{Mask} (листинг~\ref{mask}) и складывать новые посещенные вершины в вектор посещенных вершин. Алгоритм завершает свою работу, когда \texttt{front} становится пустым. 
+
+\begin{lstlisting}[style=codelistingstyle, caption={Вспомогательная поэлементная функция для удаления из ветора front посещенных ранее вершин},label={mask}, frame=single]
+let Mask value1 value2 =
+    match value1, value2 with
+    | Option.None, _ -> Option.None
+    | Some value1, Option.None -> Some value1
+    | Some _, _ -> Option.None
+\end{lstlisting}
