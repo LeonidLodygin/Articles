@@ -59,9 +59,9 @@
     \put(0.12546083,0.14120581){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{C}\end{tabular}}}}%
     \put(0.25176651,0.14289554){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{D}\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{quadtree.pdf}}%
-    \put(0.55076872,0.16457053){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{А}\end{tabular}}}}%
-    \put(0.65437302,0.16352841){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{B}\end{tabular}}}}%
-    \put(0.7636912,0.16365963){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{C}\end{tabular}}}}%
-    \put(0.86395867,0.16492695){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{D}\end{tabular}}}}%
+    \put(0.55245843,0.16506455){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{А}\end{tabular}}}}%
+    \put(0.65521785,0.16506457){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{B}\end{tabular}}}}%
+    \put(0.76538093,0.16573061){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{C}\end{tabular}}}}%
+    \put(0.8656484,0.16506457){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{0}\smash{\begin{tabular}[t]{l}\textbf{D}\end{tabular}}}}%
   \end{picture}%
 \endgroup%
