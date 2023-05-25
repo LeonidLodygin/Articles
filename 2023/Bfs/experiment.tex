@@ -47,8 +47,8 @@
     \scalebox{0.7}{
     \begin{tabular}{| a | r | r | a | r | r |}
     \hline
-        \textsc{Vertices} & \textsc{Density} & \textsc{Time} &
-         \textsc{Vertices} & \textsc{Density} & \textsc{Time} \\ 
+        \textsc{Vertices} & \textsc{Density} & \textsc{Time $\pm$ Error} &
+         \textsc{Vertices} & \textsc{Density} & \textsc{Time $\pm$ Error} \\ 
         \hline
         500 & 0.1 & $17 \pm 0.1$ & 2500 & 0.1 & $429 \pm 2$  \\ 
         500 & 0.3 & $33 \pm 0.3$ & 2500 & 0.3 & $860 \pm 3$ \\
@@ -73,7 +73,7 @@
 \centering
     \caption{Производительность параллельного алгоритма обхода графов в ширину (лучшие данные по метрике). Графа \texttt{SpeedUp} показывает отношение скорости работы параллельной версии алгоритма к скорости работы последовательной версии. }
     \rowcolors{2}{black!2}{black!10}
-    \scalebox{0.5}{
+    \scalebox{0.7}{
     \begin{tabular}{| a | r | r | r | r | r |}
     \hline
         \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{parallelAdd} & \textsc{SpeedUp}\\
@@ -111,7 +111,7 @@
     \scalebox{0.7}{
     \begin{tabular}{| a | r | r | r | r |}
     \hline
-        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{parallelAdd} & \textsc{Time}\\ 
+        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{parallelAdd} & \textsc{Time $\pm$ Error}\\ 
         \hline
         5000 & 0.1 & 1 & 1 & $1411 \pm 10$  \\ 
         5000 & 0.1 & 1 & 2 & $1401 \pm 12$  \\
@@ -138,7 +138,7 @@
     \scalebox{0.7}{
     \begin{tabular}{| a | r | r | r | r |}
     \hline
-        \textsc{Vertices} & \textsc{Density} & \textsc{TimeBfs} & \textsc{TimeParallelBfs} & \textsc{SpeedUp}\\
+        \textsc{Vertices} & \textsc{Density} & \textsc{TimeBfs $\pm$ Error} & \textsc{TimeParallelBfs $\pm$ Error} & \textsc{SpeedUp}\\
         \hline
         10 & 0.1 & $15.00 \pm 0.03$ & $53 \pm 0.2$ & 3.5 \\ 
         10 & 0.3 & $20 \pm 0.4$ & $78 \pm 0.3$ & 3.9 \\
@@ -160,7 +160,7 @@
     \scalebox{0.7}{
     \begin{tabular}{| a | r | r | r | r |}
     \hline
-        \textsc{Vertices} & \textsc{Density} & \textsc{TimeBfs} & \textsc{TimeParallelBfs} & \textsc{SpeedUp}\\
+        \textsc{Vertices} & \textsc{Density} & \textsc{TimeBfs $\pm$ Error} & \textsc{TimeParallelBfs $\pm$ Error} & \textsc{SpeedUp}\\
         \hline
         50 & 0.1 & $293 \pm 6$ & $284 \pm 3$ & 0.97 \\ 
         50 & 0.3 & $372 \pm 7$ & $278 \pm 5$ & 0.74\\ 
@@ -182,8 +182,8 @@
     \scalebox{0.6}{
     \begin{tabular}{| a | r | r | r | a | r | r | r |}
     \hline
-        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{Time} &
-        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{Time} \\ 
+        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{Time $\pm$ Error} &
+        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{Time $\pm$ Error} \\ 
         \hline
         500 & 0.1 & 1 & $9,8 \pm 0.1$ & 2500 & 0.1 & 2 & $240 \pm 3$  \\ 
         500 & 0.3 & 1 & $19 \pm 0.4$ & 2500 & 0.3 & 2 & $470 \pm 9$ \\ 
@@ -211,7 +211,7 @@
     \scalebox{0.6}{
     \begin{tabular}{| a | r | r | r | r | r |}
     \hline
-        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{Time} &
+        \textsc{Vertices} & \textsc{Density} & \textsc{parallelMult} & \textsc{Time $\pm$ Error} &
         \textsc{SpeedUp} \\ 
         \hline
         1000 & 0.1 & 2 & $0.0400 \pm 0.0003$ & 1.25 \\
@@ -252,7 +252,7 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/plot.png}
-    \caption{Гистограмма распределения данных}
+    \caption{Гистограмма распределения замеров времени работы алгоритма на графе из 5000 вершин плотности 0.9. Функция умножения разделена на 16 подзадач, функция сложения на две.}
     \label{fig:plot}
 \end{figure}
 
