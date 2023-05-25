@@ -53,5 +53,28 @@
     \label{fig:gpu}
 \end{figure}
 
+Обработанные версии на GPU и CPU идентичны. Для примера, оригинальное изображение~\ref{fig:original}, обработанное на CPU~\ref{fig:cpucat}, обработанное на GPU~\ref{fig:gpucat}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/originalCat.jpg}
+    \caption{Оригинальное изображение}
+    \label{fig:original}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/CPUCat.jpg}
+    \caption{Изображение после обработки на CPU}
+    \label{fig:cpucat}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/GPUCat.jpg}
+    \caption{Изображение после обработки на GPU}
+    \label{fig:gpucat}
+\end{figure}
+
 \subsubsection{RQ1}
 Исходя из полученных данных можно сделать вывод, что обработка массива изображений на GPU в два раза опережает параллельную обработку массива изображений на CPU при использовании количества потоков, равное количеству логических процессоров системы. Такой результат можно объяснить тем, что в графических процессорах используется программная модель SIMT (Single instruction, multiple threads), что позволяет выполнять одну и ту же инструкцию на гораздо большем числе независимых вычислителей.
